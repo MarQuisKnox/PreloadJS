@@ -4,6 +4,9 @@ PreloadJS is a library to make working with asset preloading easier. It provides
 file types, automatic detection of XHR (XMLHttpRequest) availability with a fallback to tag-base loading, composite
 progress events, and a plugin model to assist with preloading in other libraries such as [SoundJS](http://www.soundjs.com).
 
+# Changes in this version
+	This version supports HTTP Auth
+
 ## Example
 	var preload = new createjs.LoadQueue();
 	preload.addEventListener("fileload", handleFileComplete);
