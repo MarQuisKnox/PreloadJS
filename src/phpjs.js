@@ -1,20 +1,3 @@
-/**
- * CloneUI.com - Instagram Clone
- * phpJS
- *
- * @author      CloneUI <opensource@cloneui.com>
- * @copyright   2012 - 2013 CloneUI
- * @link        http://cloneui.com
- * @license     Affero General Public License
- *
- * @since  	    Wednesday, July 10, 2013, 20:49 GMT+1
- * @modified    $Date: 2011-11-16 18:27:16 +0100 (Wed, 16 Nov 2011) $ $Author: mknox $
- * @version     $Id: IndexController.php 5139 2011-11-16 17:27:16Z mknox $
- *
- * @category    JavaScript
- * @package     Instagram Clone
-*/
-
 function array_rand (input, num_req) {
   // http://kevin.vanzonneveld.net
   // +   original by: Waldo Malqui Silva
