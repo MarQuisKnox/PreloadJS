@@ -103,7 +103,11 @@ this.createjs = this.createjs||{};
 	 * @private
 	 * @since 0.3.1
 	 */
-	p._basePath = null;
+	p._basePath			= null;
+	
+	p._username			= null;
+	p._password			= null;
+	p._requestHeaders	= null;
 
 // Events
 	/**

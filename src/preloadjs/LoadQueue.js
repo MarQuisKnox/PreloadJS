@@ -224,8 +224,8 @@ TODO: WINDOWS ISSUES
 	 * @constructor
 	 * @extends AbstractLoader
 	 */
-	var LoadQueue = function(useXHR, basePath) {
-		this.init(useXHR, basePath);
+	var LoadQueue = function(useXHR, basePath, username, password, requestHeaders) {
+		this.init(useXHR, basePath, username, password, requestHeaders);
 	};
 
 	var p = LoadQueue.prototype = new createjs.AbstractLoader();
@@ -605,7 +605,7 @@ TODO: WINDOWS ISSUES
 	p._loadedScripts = null;
 
 	// Overrides abstract method in AbstractLoader
-	p.init = function(useXHR, basePath) {
+	p.init = function(useXHR, basePath, username, password, requestHeaders) {
 		this._numItems = this._numItemsLoaded = 0;
 		this._paused = false;
 		this._loadStartWasDispatched = false;
@@ -624,7 +624,11 @@ TODO: WINDOWS ISSUES
 		this._typeCallbacks = {};
 		this._extensionCallbacks = {};
 
-		this._basePath = basePath;
+		this._basePath			= basePath;
+		this._username			= username;
+		this._password			= password;
+		this._requestHeaders	= requestHeaders;
+		
 		this.setUseXHR(useXHR);
 	};
 
@@ -849,14 +853,14 @@ TODO: WINDOWS ISSUES
 	 * Sources beginning with http:// or similar will not receive a base path.
 	 * The load item will not be modified.
 	 */
-	p.loadFile = function(file, loadNow, basePath) {
+	p.loadFile = function(file, loadNow, basePath, username, password, requestHeaders) {
 		if (file == null) {
 			var event = new createjs.Event("error");
 			event.text = "PRELOAD_NO_FILE";
 			this._sendError(event);
 			return;
 		}
-		this._addItem(file, basePath);
+		this._addItem(file, basePath, username, password, requestHeaders);
 
 		if (loadNow !== false) {
 			this.setPaused(false);
@@ -895,7 +899,7 @@ TODO: WINDOWS ISSUES
 	 * Sources beginning with http:// or similar will not receive a base path.
 	 * The load items will not be modified.
 	 */
-	p.loadManifest = function(manifest, loadNow, basePath) {
+	p.loadManifest = function(manifest, loadNow, basePath, username, password, requestHeaders) {
 		var data = null;
 
 		if (manifest instanceof Array) {
@@ -917,7 +921,7 @@ TODO: WINDOWS ISSUES
 		}
 
 		for (var i=0, l=data.length; i<l; i++) {
-			this._addItem(data[i], basePath);
+			this._addItem(data[i], basePath, username, password, requestHeaders);
 		}
 
 		if (loadNow !== false) {
@@ -1015,10 +1019,10 @@ TODO: WINDOWS ISSUES
 	 * 	Sources beginning with http:// or similar will not receive a base path.
 	 * @private
 	 */
-	p._addItem = function(value, basePath) {
+	p._addItem = function(value, basePath, username, password, requestHeaders) {
 		var item = this._createLoadItem(value);
 		if (item == null) { return; } // Sometimes plugins or types should be skipped.
-		var loader = this._createLoader(item, basePath);
+		var loader = this._createLoader(item, basePath, username, password, requestHeaders);
 		if (loader != null) {
 			this._loadQueue.push(loader);
 			this._loadQueueBackup.push(loader);
@@ -1142,7 +1146,7 @@ TODO: WINDOWS ISSUES
 	 * @return {AbstractLoader} A loader that can be used to load content.
 	 * @private
 	 */
-	p._createLoader = function(item, basePath) {
+	p._createLoader = function(item, basePath, username, password, requestHeaders) {
 		// Initially, try and use the provided/supported XHR mode:
 		var useXHR = this.useXHR;
 
@@ -1163,12 +1167,26 @@ TODO: WINDOWS ISSUES
 		}
 
 		// If no basepath was provided here (from _addItem), then use the LoadQueue._basePath instead.
-		if (basePath == null) { basePath = this._basePath; }
+		if (basePath == null) { 
+			basePath = this._basePath; 
+		}
+		
+		if( username == null ) {
+			username = this._username;			
+		}
+		
+		if( password == null ) {
+			password = this._password;			
+		}
+
+		if( requestHeaders == null ) {
+			requestHeaders = this._requestHeaders;			
+		}
 
 		if (useXHR) {
-			return new createjs.XHRLoader(item, basePath);
+			return new createjs.XHRLoader(item, basePath, username, password, requestHeaders);
 		} else {
-			return new createjs.TagLoader(item, basePath);
+			return new createjs.TagLoader(item, basePath, username, password, requestHeaders);
 		}
 	};
 

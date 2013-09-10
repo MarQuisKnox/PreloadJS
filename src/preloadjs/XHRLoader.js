@@ -49,8 +49,8 @@ this.createjs = this.createjs || {};
 	 * for an overview of supported file properties.
 	 * @extends AbstractLoader
 	 */
-	var XHRLoader = function (item, basePath) {
-		this.init(item, basePath);
+	var XHRLoader = function (item, basePath, username, password, requestHeaders) {
+		this.init(item, basePath, username, password, requestHeaders);
 	};
 
 	var p = XHRLoader.prototype = new createjs.AbstractLoader();
@@ -103,9 +103,13 @@ this.createjs = this.createjs || {};
 	p._rawResponse = null;
 
 	// Overrides abstract method in AbstractLoader
-	p.init = function (item, basePath) {
-		this._item = item;
-		this._basePath = basePath;
+	p.init = function (item, basePath, username, password, requestHeaders) {
+		this._item				= item;
+		this._basePath			= basePath;
+		this._username			= username;
+		this._password			= password;
+		this._requestHeaders	= requestHeaders;
+		
 		if (!this._createXHR(item)) {
 			//TODO: Throw error?
 		}
@@ -130,7 +134,7 @@ this.createjs = this.createjs || {};
 	 * </ul>
 	 * Note that if a raw result is requested, but not found, the result will be returned instead.
 	 */
-	p.getResult = function (rawResult) {
+	p.getResult = function (rawResult) {		
 		if (rawResult && this._rawResponse) {
 			return this._rawResponse;
 		}
@@ -145,7 +149,7 @@ this.createjs = this.createjs || {};
 	};
 
 	// Overrides abstract method in AbstractLoader
-	p.load = function () {
+	p.load = function () {		
 		if (this._request == null) {
 			this._handleError();
 			return;
@@ -224,7 +228,7 @@ this.createjs = this.createjs || {};
 	 * @param {Object} event The XHR progress event.
 	 * @private
 	 */
-	p._handleProgress = function (event) {
+	p._handleProgress = function (event) {		
 		if (!event || event.loaded > 0 && event.total == 0) {
 			return; // Sometimes we get no "total", so just ignore the progress event.
 		}
@@ -241,7 +245,7 @@ this.createjs = this.createjs || {};
 	 * @param {Object} event The XHR loadStart event.
 	 * @private
 	 */
-	p._handleLoadStart = function (event) {
+	p._handleLoadStart = function (event) {		
 		clearTimeout(this._loadTimeout);
 		this._sendLoadStart();
 	};
@@ -297,12 +301,12 @@ this.createjs = this.createjs || {};
 			return;
 		}
 		this.loaded = true;
-
+		
 		if (!this._checkError()) {
 			this._handleError();
 			return;
 		}
-
+		
 		this._response = this._getResponse();
 		this._clean();
 		var isComplete = this._generateTag();
@@ -338,8 +342,9 @@ this.createjs = this.createjs || {};
 	p._checkError = function () {
 		//LM: Probably need additional handlers here, maybe 501
 		var status = parseInt(this._request.status);
-
+		
 		switch (status) {
+			case 401:   // Authorization Required		
 			case 404:   // Not Found
 			case 0:     // Not Loaded
 				return false;
@@ -394,7 +399,7 @@ this.createjs = this.createjs || {};
 	 * @return {Boolean} If an XHR request or equivalent was successfully created.
 	 * @private
 	 */
-	p._createXHR = function (item) {
+	p._createXHR = function (item) {						
 		// Check for cross-domain loads. We can't fully support them, but we can try.
 		var target = document.createElement("a");
 		target.href = this.buildPath(item.src, this._basePath);
@@ -427,7 +432,7 @@ this.createjs = this.createjs || {};
 					}
 				}
 			}
-		}
+		}			
 
 		// IE9 doesn't support overrideMimeType(), so we need to check for it.
 		if (item.type == createjs.LoadQueue.TEXT && req.overrideMimeType) {
@@ -443,10 +448,23 @@ this.createjs = this.createjs || {};
 		} else {
 			src = this.buildPath(item.src, this._basePath);
 		}
-
+		
+		//console.log( req );		
+		
 		// Open the request.  Set cross-domain flags if it is supported (XHR level 1 only)
+		//req.open(item.method || createjs.LoadQueue.GET, src, true, this._username, this._password);
 		req.open(item.method || createjs.LoadQueue.GET, src, true);
-
+		
+		if( req instanceof XMLHttpRequest ) {
+			if( this._username != null && this._password != null ) {			
+				req.setRequestHeader('Authorization', 'Basic ' + btoa(this._username+':'+this._password) );
+			}			
+		}
+		
+		if( this._requestHeaders != null ) {
+			
+		}
+		
 		if (crossdomain && req instanceof XMLHttpRequest && this._xhrLevel == 1) {
 			req.setRequestHeader("Origin", location.origin);
 		}
