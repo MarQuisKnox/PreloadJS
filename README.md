@@ -9,6 +9,9 @@ progress events, and a plugin model to assist with preloading in other libraries
 	
 ## How To Use HTTP Auth
 	preload = new createjs.LoadQueue(true, 'img/protected/', 'username', 'password');
+	
+## Demo
+	http://preloadjs.tempstage.net
 
 ## Example
 	var preload = new createjs.LoadQueue();
