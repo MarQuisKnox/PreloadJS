@@ -117,18 +117,18 @@
 
             // Push each item into our manifest
             manifest = [
-	            "img10.jpg?" + rand(),
-	            "img11.jpg?" + rand(),
-	            "img19.jpg?" + rand(),
-	            "img20.jpg?" + rand(),
-	            "img21.jpg?" + rand(),
-	            "img22.jpg?" + rand(),
-	            "img23.jpg?" + rand(),
-	            "img24.jpg?" + rand()
+	            "http://preloadjs.tempstage.net/img/protected/img10.jpg?" + rand(),
+	            "http://preloadjs.tempstage.net/img/protected/img11.jpg?" + rand(),
+	            "http://preloadjs.tempstage.net/img/protected/img19.jpg?" + rand(),
+	            "http://preloadjs.tempstage.net/img/protected/img20.jpg?" + rand(),
+	            "http://preloadjs.tempstage.net/img/protected/img21.jpg?" + rand(),
+	            "http://preloadjs.tempstage.net/img/protected/img22.jpg?" + rand(),
+	            "http://preloadjs.tempstage.net/img/protected/img23.jpg?" + rand(),
+	            "http://preloadjs.tempstage.net/img/protected/img24.jpg?" + rand()
             ];
 
             // Create a preloader. There is no manifest added to it up-front, we will add items on-demand.
-            preload = new createjs.LoadQueue(true, 'img/protected/', 'username', 'password');
+            preload = new createjs.LoadQueue(true, null, 'preloadjs', 'V3at64a336237n6IbJuvG8VLN');
 
             // Use this instead to use tag loading
             //preload = new createjs.LoadQueue(false);
